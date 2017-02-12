@@ -22,4 +22,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
-apples
+something-continuous
+gover*
+*.out

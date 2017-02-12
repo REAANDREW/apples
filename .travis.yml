@@ -1,0 +1,8 @@
+language: go
+sudo: false
+go:
+    - 1.7.4
+before_install:
+    - go get -t ./...
+script:
+    - make

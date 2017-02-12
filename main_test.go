@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -8,16 +11,38 @@ import (
 
 func TestSpec(t *testing.T) {
 
-	// Only pass t into top-level Convey calls
-	Convey("Given some integer with a starting value", t, func() {
-		x := 1
+	Convey("Service Factory", t, func() {
+		Convey("returns a new service", func() {
+			So(CreateService(":45000"), ShouldNotBeNil)
+		})
+	})
 
-		Convey("When the integer is incremented", func() {
-			x++
+	Convey("Service", t, func() {
+		var port = 45001
+		var endpoint = fmt.Sprintf(":%d", port)
+		var service = CreateService(endpoint)
+		defer service.Stop()
+		service.Start()
 
-			Convey("The value should be greater by one", func() {
-				So(x, ShouldEqual, 2)
-			})
+		Convey("returns Hello World", func() {
+			var client = &http.Client{}
+			var url = fmt.Sprintf("http://localhost:%d/", port)
+
+			request, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				panic(err)
+			}
+
+			response, err := client.Do(request)
+			if err != nil {
+				panic(err)
+			}
+
+			So(response.StatusCode, ShouldEqual, http.StatusOK)
+			defer response.Body.Close()
+			body, err := ioutil.ReadAll(response.Body)
+
+			So(string(body), ShouldEqual, "Hello, World!")
 		})
 	})
 }
