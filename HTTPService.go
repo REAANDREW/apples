@@ -9,13 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Service struct {
+type HTTPService struct {
 	engine   *gin.Engine
 	stopFunc func()
 	endpoint string
 }
 
-func (instance *Service) Start() {
+func (instance *HTTPService) Start() {
 	var server = manners.NewWithServer(&http.Server{
 		Addr:    instance.endpoint,
 		Handler: instance.engine,
@@ -29,23 +29,22 @@ func (instance *Service) Start() {
 	time.Sleep(1)
 }
 
-func (instance *Service) Stop() {
+func (instance *HTTPService) Stop() {
 	instance.stopFunc()
 	time.Sleep(1)
 }
 
-func CreateService(endpoint string) *Service {
+func CreateHTTPService(endpoint string, configureRouting func(router *gin.Engine)) *HTTPService {
 	router := gin.Default()
 
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.String(200, "Hello, World!")
-	})
+	configureRouting(router)
+
 	router.GET("/meta/health", func(ctx *gin.Context) {
 		fmt.Println("returning status ok")
 		ctx.Status(200)
 	})
 
-	return &Service{
+	return &HTTPService{
 		engine:   router,
 		endpoint: endpoint,
 	}

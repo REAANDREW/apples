@@ -17,7 +17,8 @@ LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME}"
 .DEFAULT_GOAL: $(BINARY)
 
 $(BINARY): deps $(SOURCES)
-	go build ${LDFLAGS} -o ${BINARY} main.go
+	#go build ${LDFLAGS} -o ${BINARY} main.go
+	go build -o ${BINARY} main.go
 
 .PHONY: deps
 deps:
@@ -34,4 +35,5 @@ clean:
 
 .PHONY: test
 test:
-	go test
+	go test -coverprofile=c.out
+	go tool cover -html=c.out -o coverage.html

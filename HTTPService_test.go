@@ -1,23 +1,25 @@
-package main
+package main_test
 
 import (
 	"fmt"
 	"net/http"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	sut "github.com/reaandrew/something-continuous"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestService(t *testing.T) {
-	Convey("Service Factory", t, func() {
+func TestHTTPService(t *testing.T) {
+	var address = ":51000"
+	var service = sut.CreateHTTPService(address, func(router *gin.Engine) {})
+	Convey("HTTP Service Factory", t, func() {
 		Convey("returns a new service", func() {
-			So(CreateService(":45000"), ShouldNotBeNil)
+			So(service, ShouldNotBeNil)
 		})
 	})
 
-	FocusConvey("Service Start Stop", t, func() {
-		var address = ":51000"
-		var service = CreateService(address)
+	Convey("HTTP Service Start Stop", t, func() {
 		service.Start()
 
 		var url = fmt.Sprintf("http://localhost%s/meta/health", address)
