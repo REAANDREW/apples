@@ -11,12 +11,6 @@ import (
 
 func TestSpec(t *testing.T) {
 
-	Convey("Service Factory", t, func() {
-		Convey("returns a new service", func() {
-			So(CreateService(":45000"), ShouldNotBeNil)
-		})
-	})
-
 	Convey("Service", t, func() {
 		var port = 45001
 		var endpoint = fmt.Sprintf(":%d", port)

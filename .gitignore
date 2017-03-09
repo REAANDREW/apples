@@ -25,3 +25,4 @@ _testmain.go
 something-continuous
 gover*
 *.out
+coverage.html
