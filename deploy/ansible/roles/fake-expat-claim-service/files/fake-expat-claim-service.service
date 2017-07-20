@@ -1,0 +1,17 @@
+[Unit]
+Description=The Expat Assistance Benefit Service
+#Requires=After=mysql.service       # Requires the mysql service to run first
+
+[Service]
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -m 777 -p /var/run/fecs
+ExecStartPre=/bin/chown fecs:nginx /var/run/fecs
+ExecStart=/usr/bin/node /opt/fake-expat-claim-service/app.js -c /opt/fake-expat-claim-service/config/prod.json 2>> /var/log/fecs/fake-expat-claim-service.err.log 1>> /var/log/fecs/fake-expat-claim-service.log
+ExecStopPost=/bin/rm -r /var/run/fecs
+Restart=always
+RestartSec=10 
+User=fecs
+Group=fecs
+
+[Install]
+WantedBy=multi-user.target

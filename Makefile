@@ -20,7 +20,7 @@ $(BINARY): deps $(SOURCES)
 	#go build ${LDFLAGS} -o ${BINARY} main.go
 	go build -o ${BINARY} main.go
 
-.PHONY: deps
+.PHONY: deps 
 deps:
 	go get -t ./...
 

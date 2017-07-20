@@ -1,0 +1,2 @@
+[web]
+54.154.5.27   ansible_connection=ssh  ansible_user=centos

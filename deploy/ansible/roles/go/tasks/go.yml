@@ -1,0 +1,17 @@
+# vim:ft=ansible:
+---
+- block:
+  - name: Install EPEL Repository
+    become: yes
+    become_method: sudo
+    yum:
+      name: epel-release
+      update_cache: yes
+      state: installed
+  - name: Install 
+    get_url: 
+      url: https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz
+      dest: /usr/local
+      
+  become: yes
+  become_method: sudo

@@ -1,0 +1,27 @@
+{
+  "provisioners": [
+    {
+        "type": "shell",
+        "inline": [
+            "#sudo yum -y install epel-release",
+            "#sudo yum -y update",
+            "#sudo yum -y install ansible"
+        ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/playbook.yml"
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "eu-west-1",
+      "source_ami": "ami-f4634d92",
+      "instance_type": "t2.micro",
+      "ssh_username": "centos",
+      "ami_name": "fake-expat-claim-service {{timestamp}}"
+    }
+  ],
+  "post-processors": []
+}

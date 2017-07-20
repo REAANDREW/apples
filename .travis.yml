@@ -1,8 +1,34 @@
 language: go
 sudo: false
 go:
-    - 1.7.4
+    - 1.8
 before_install:
-    - go get -t ./...
+    - # http://stackoverflow.com/questions/16989598/bash-comparing-version-numbers
+    - if [ ! $(cat VERSION | grep -P "[0-9]+\.[0-9]+\.[0-9]+$") ]; then echo "MALFORMED VERSION NUMBER" && exit 1;fi;
+    - current_version=$(git describe --tags --abbrev=0 2&> /dev/null || true | grep -v latest || true)
+    - next_version="$(cat VERSION)"
+    - if [ "$current_version" != "" ] && [ ! $(version_gt next_version current_version) ]; then echo "VERSION NEEDS TO INCREMENT && exit 1"; fi;
+    - go get github.com/mitchellh/gox
+    - go get github.com/tcnksm/ghr
+    - go get github.com/axw/gocov/gocov
+    - go get github.com/modocache/gover
+    - go get github.com/mattn/goveralls
+    - go get github.com/onsi/ginkgo/ginkgo
+    - go get github.com/onsi/gomega
+    - go get github.com/mattn/go-isatty
+    - go get -u github.com/jteeuwen/go-bindata/...
+before_script:
 script:
-    - make
+    - go clean
+    - (cd report && go-bindata -pkg report data)
+    - go get -t ./...
+    - go get -u github.com/alecthomas/gometalinter
+    - make lint
+    - echo go build -ldflags "-X main.BuildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.CommitHash=`git rev-parse HEAD` -X main.Version=\"${APP_VERSION}\""
+    - go build -ldflags "-X main.BuildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.CommitHash=`git rev-parse HEAD` -X main.Version=\"${APP_VERSION}\""
+    - make test
+    - goveralls -service travis-ci -coverprofile=coverage.txt -ignore=report/bindata.go
+notifications:
+after_success:
+    - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags "-X main.BuildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.CommitHash=`git rev-parse HEAD` -X main.Version=\"${APP_VERSION}\""
+    - ghr -username reaandrew -token $GITHUB_TOKEN --delete v0.1.0 dist/
